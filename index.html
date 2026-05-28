@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bank Exam Quiz</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+}
+
+/* ========================= */
+/* TIMER AREA */
+/* ========================= */
+
+#timer-container{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#f4f6f9;
+    padding-bottom:10px;
+}
+
+#timer{
+    background:#222;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.timer-buttons{
+    text-align:center;
+}
+
+#pauseBtn,
+#resumeBtn{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin:5px;
+}
+
+#pauseBtn{
+    background:#ff9800;
+    color:white;
+}
+
+#resumeBtn{
+    background:#28a745;
+    color:white;
+}
+
+.question{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.question h3{
+    margin-bottom:15px;
+}
+
+.option{
+    display:block;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.option:hover{
+    background:#f0f0f0;
+}
+
+.selected{
+    background:#cfe2ff;
+    border:2px solid #0d6efd;
+}
+
+.mark-btn{
+    margin-top:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ff9800;
+    color:white;
+}
+
+.marked{
+    background:#ffcc80 !important;
+}
+
+.review-marked{
+    background:#e0e0e0 !important;
+    border:2px solid #9e9e9e;
+}
+
+.clear-btn{
+    margin-top:10px;
+    margin-left:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#dc3545;
+    color:white;
+}
+
+.submit-btn{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.result-box{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.review-btn{
+    padding:12px 20px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#007bff;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.review-question{
+    background:white;
+    padding:20px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.correct{
+    color:green;
+    font-weight:bold;
+}
+
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+
+.unanswered{
+    color:orange;
+    font-weight:bold;
+}
+
+.correct-answer{
+    background:#d4edda;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.disabled-option{
+    pointer-events:none;
+    opacity:0.6;
+}
+
+.disabled-btn{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Bank Exam MCQ Quiz</h1>
+
+<!-- ========================= -->
+<!-- TIMER -->
+<!-- ========================= -->
+
+<div id="timer-container">
+
+    <div id="timer">
+        Time Left: 20:00
+    </div>
+
+    <div class="timer-buttons">
+
+        <button id="pauseBtn" onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button id="resumeBtn" onclick="resumeTimer()" disabled>
+            Resume
+        </button>
+
+    </div>
+
+</div>
+
+<div id="quiz"></div>
+
+<button class="submit-btn" onclick="submitQuiz()">
+Submit Quiz
+</button>
+
+</div>
+
+<script>
+
+// ===============================
+// QUESTIONS AREA
+// ===============================
+
+const questions = [
+
+{q:"Union Minister Jyotiraditya M. Scindia, while working with the Ministry of Development of North Eastern Region (MDoNER), launched a ₹175 crore mission aimed at strengthening coffee cultivation, farmer livelihoods, and positioning a northeastern state as a premium coffee-producing region in India. Under this initiative, Arabica and Robusta coffee clusters were identified in Kohima district and other regions. Which of the following states is associated with the ‘Coffee of Nagaland’ mission?", options:["Mizoram","Nagaland","Meghalaya","Arunachal Pradesh"], answer:1},
+
+{q:"Under the ‘Coffee of Nagaland’ initiative launched to strengthen India’s coffee ecosystem in the North-East, Touphema village in Kohima district was selected for Arabica coffee cultivation, while another district was identified for Robusta coffee. Which among the following districts was selected for Robusta coffee cultivation?", options:["Dimapur","Wokha","Mon","Ghoto-ving"], answer:3},
+
+{q:"The National Institute of Open Schooling (NIOS), under the Department of School Education and Literacy (DoSEL), held a high-level review meeting focused on reconnecting out-of-school children, especially in the 14–18 age group, with formal education under the National Education Policy (NEP) 2020. Who chaired this review meeting?", options:["Dharmendra Pradhan","Sanjay Kumar","Anita Karwal","Vineet Joshi"], answer:1},
+
+{q:"The National Institute of Open Schooling (NIOS) initiative under the Ministry of Education (MoE) aims to reconnect out-of-school children through flexible education systems. According to the data discussed during the review meeting, out of every 100 children entering Class I, only how many children reach Class XII?", options:["58","62","67","71"], answer:1},
+
+{q:"Union Minister Rajnath Singh laid the foundation stone for the Advanced Medium Combat Aircraft (AMCA) programme facility in Andhra Pradesh. The AMCA programme is being developed under which organisation?", options:["Hindustan Aeronautics Limited (HAL)","Bharat Electronics Limited (BEL)","Aeronautical Development Agency (ADA)","Defence Research and Development Organisation (DRDO) directly"], answer:2},
+
+{q:"The AMCA programme facility foundation was laid at a location in Andhra Pradesh where a major naval systems manufacturing facility was also inaugurated. In which district was this defence-related event held?", options:["Visakhapatnam district","Chittoor district","Sri Sathya Sai district","Kurnool district"], answer:2},
+
+{q:"The AMCA programme facility announced by the Government of India involves a major investment aimed at strengthening indigenous fighter aircraft capability. What is the approximate investment associated with this programme?", options:["₹10,500 crore","₹15,000 crore","₹18,200 crore","₹22,000 crore"], answer:1},
+
+{q:"The United States Department of State approved Foreign Military Sales (FMS) sustainment packages for India involving Apache helicopters and ultra-light howitzers. Which helicopter platform was included in this approval?", options:["CH-47 Chinook","AH-64E Apache","MH-60R Seahawk","Apache Guardian Block III only"], answer:1},
+
+{q:"The United States approved a military sustainment package worth approximately USD 131 million specifically related to long-term support for which artillery system used by India?", options:["K9 Vajra-T","Pinaka Multi Barrel Rocket Launcher","M777 ultra-light howitzers","Dhanush artillery guns"], answer:2},
+
+{q:"The sustainment support package for India’s AH-64E Apache attack helicopters approved under the Foreign Military Sales (FMS) route involved participation from major defence contractors. Which of the following companies was one of the contractors mentioned?", options:["Raytheon Technologies","Boeing Company","Northrop Grumman","General Dynamics"], answer:1},
+
+{q:"The Reserve Bank of India (RBI) issued revised directions relating to the Investment Fluctuation Reserve (IFR) applicable to various categories of banks and regulated entities. What is the primary purpose of maintaining the IFR?", options:["To improve rural credit penetration","To absorb losses arising from market-to-market valuation changes","To support priority sector lending obligations","To finance capital expenditure of banks"], answer:1},
+
+{q:"Under the revised RBI directions related to Investment Fluctuation Reserve (IFR), banks create the reserve out of which source?", options:["Gross Non-Performing Assets (GNPA) provisions","Share premium reserves","Their profits","Cash Reserve Ratio (CRR) balances"], answer:2},
+
+{q:"The Reserve Bank of India imposed several restrictions on Nagar Sahakari Bank due to deteriorating financial conditions and supervisory concerns. This cooperative bank is located in which state?", options:["Madhya Pradesh","Uttar Pradesh","Rajasthan","Bihar"], answer:1},
+
+{q:"Following regulatory action by the RBI on Nagar Sahakari Bank Limited, customers were subjected to withdrawal restrictions for a period of six months. What was the maximum withdrawal limit allowed per depositor?", options:["₹5,000","₹25,000","₹10,000","₹50,000"], answer:2},
+
+{q:"Despite restrictions imposed on Nagar Sahakari Bank by the Reserve Bank of India, depositors continued to remain eligible for insurance coverage under the Deposit Insurance and Credit Guarantee Corporation (DICGC). What is the maximum deposit insurance amount available?", options:["₹2 lakh","₹3 lakh","₹5 lakh","₹10 lakh"], answer:2},
+
+{q:"Viyona Fintech India Private Limited secured certification from the National Payments Corporation of India (NPCI) for multiple payment infrastructures including UPI, IMPS, and IMB integrations. What does IMPS stand for?", options:["Immediate Money Payment Service","Instant Mobile Processing System","Immediate Payment Service","Interbank Monetary Payment Structure"], answer:2},
+
+{q:"Which of the following payment infrastructures certified by NPCI for Viyona Fintech India Private Limited is specifically associated with interoperable mobile banking integrations?", options:["UPI","NEFT","IMBM","RTGS"], answer:2},
+
+{q:"Google and Blackstone announced a joint venture aimed at establishing an Artificial Intelligence (AI) cloud infrastructure company with Blackstone as the investment partner. Which executive was appointed as the Chief Executive Officer (CEO) of this venture?", options:["Thomas Kurian","Sundar Pichai","Benjamin Treynor Sloss","Ruth Porat"], answer:2},
+
+{q:"The AI cloud infrastructure joint venture announced by Google and Blackstone is expected to use TPU infrastructure. In the context of Google’s technology ecosystem, TPU refers to:", options:["Tensor Processing Unit","Technical Processing Utility","Transistor Performance Unit","Total Parallel Utility"], answer:0},
+
+{q:"Google LLC and Blackstone Inc. announced a USD 5 billion AI cloud infrastructure initiative. Google LLC functions as a subsidiary of which parent company?", options:["Meta Platforms Inc.","Alphabet Inc.","OpenAI Global Holdings","DeepMind Technologies"], answer:1},
+
+{q:"V. Narayanan Menon Satheesan took oath as the Chief Minister of Kerala after the election of the 13th Chief Minister in the state. Which political leader succeeded Pinarayi Vijayan as Kerala CM according to the given information?", options:["K. Surendran","V. D. Satheesan","V. Narayanan Menon Satheesan","Adoor Prakash"], answer:2},
+
+{q:"The oath-taking ceremony of Kerala’s newly elected Chief Minister was administered by the Governor of Kerala. Who among the following was the Governor mentioned?", options:["Arif Mohammed Khan","Rajendra Vishwanath Arlekar","R. N. Ravi","Thaawarchand Gehlot"], answer:1},
+
+{q:"Saurabh Vijay officially assumed charge as the Chief Executive Officer (CEO) of the Unique Identification Authority of India (UIDAI). UIDAI functions under which ministry?", options:["Ministry of Home Affairs","Ministry of Statistics and Programme Implementation","Ministry of Electronics and Information Technology (MeitY)","Ministry of Communications"], answer:2},
+
+{q:"The Unique Identification Authority of India (UIDAI), whose CEO position was assumed by Saurabh Vijay, is primarily responsible for the administration of which national identity programme?", options:["PAN digitisation programme","DigiLocker framework","Aadhaar operations","National Population Register"], answer:2},
+
+{q:"The Reserve Bank of India appointed Gunveer Singh as Executive Director (ED). He was associated with which RBI department before the appointment?", options:["Department of Regulation","Department of Economic and Policy Research","Department of Payment and Settlement Systems (DPSS)","Financial Inclusion and Development Department (FIDD)"], answer:2}
+
+];
+
+// ===============================
+// VARIABLES
+// ===============================
+
+let userAnswers = new Array(questions.length).fill(null);
+
+let markedForReview = new Array(questions.length).fill(false);
+
+let submitted = false;
+
+// ===============================
+// LOAD QUIZ
+// ===============================
+
+function loadQuiz(){
+
+    const quizDiv = document.getElementById("quiz");
+
+    questions.forEach((question,index)=>{
+
+        const qDiv = document.createElement("div");
+
+        qDiv.classList.add("question");
+
+        qDiv.id = `question_${index}`;
+
+        qDiv.innerHTML = `
+        <h3>Q${index+1}. ${question.q}</h3>
+        `;
+
+        question.options.forEach((option,optIndex)=>{
+
+            const opt = document.createElement("div");
+
+            opt.classList.add("option");
+
+            opt.innerText = option;
+
+            opt.onclick = ()=>selectOption(index,optIndex,opt);
+
+            opt.id = `q${index}_opt${optIndex}`;
+
+            qDiv.appendChild(opt);
+
+        });
+
+        // MARK BUTTON
+
+        const markBtn = document.createElement("button");
+
+        markBtn.innerText = "Mark For Review";
+
+        markBtn.classList.add("mark-btn");
+
+        markBtn.onclick = ()=>toggleMark(index,markBtn);
+
+        qDiv.appendChild(markBtn);
+
+        // CLEAR BUTTON
+
+        const clearBtn = document.createElement("button");
+
+        clearBtn.innerText = "Clear";
+
+        clearBtn.classList.add("clear-btn");
+
+        clearBtn.onclick = ()=>clearAnswer(index);
+
+        qDiv.appendChild(clearBtn);
+
+        quizDiv.appendChild(qDiv);
+
+    });
+
+}
+
+// ===============================
+// SELECT OPTION
+// ===============================
+
+function selectOption(qIndex,optIndex,element){
+
+    if(submitted) return;
+
+    userAnswers[qIndex] = optIndex;
+
+    const options = document.querySelectorAll(`[id^="q${qIndex}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+
+}
+
+// ===============================
+// MARK FOR REVIEW
+// ===============================
+
+function toggleMark(index,button){
+
+    markedForReview[index] = !markedForReview[index];
+
+    const questionBox = document.getElementById(`question_${index}`);
+
+    if(markedForReview[index]){
+
+        button.classList.add("marked");
+
+        button.innerText = "Marked For Review";
+
+        questionBox.classList.add("review-marked");
+
+    }else{
+
+        button.classList.remove("marked");
+
+        button.innerText = "Mark For Review";
+
+        questionBox.classList.remove("review-marked");
+
+    }
+
+}
+
+// ===============================
+// CLEAR ANSWER
+// ===============================
+
+function clearAnswer(index){
+
+    if(submitted) return;
+
+    userAnswers[index] = null;
+
+    const options = document.querySelectorAll(`[id^="q${index}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+}
+
+// ===============================
+// SUBMIT QUIZ
+// ===============================
+
+function submitQuiz(){
+
+    if(submitted) return;
+
+    submitted = true;
+
+    clearInterval(timer);
+
+    let score = 0;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unansweredCount = 0;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        if(userAns === null){
+
+            unansweredCount++;
+
+        }
+        else if(userAns === question.answer){
+
+            score += 1;
+            correctCount++;
+
+        }
+        else{
+
+            score -= 0.25;
+            wrongCount++;
+
+        }
+
+    });
+
+    let attempted = correctCount + wrongCount;
+
+    let accuracy = attempted > 0
+    ? ((correctCount/attempted)*100).toFixed(2)
+    : 0;
+
+    document.body.innerHTML = `
+
+    <div class="container">
+
+        <div class="result-box">
+
+            <h1>Quiz Submitted ✅</h1>
+
+            <h2>Total Score: ${score.toFixed(2)}</h2>
+
+            <h3>Correct Answers: ${correctCount}</h3>
+
+            <h3>Wrong Answers: ${wrongCount}</h3>
+
+            <h3>Unanswered Questions: ${unansweredCount}</h3>
+
+            <h3>Accuracy: ${accuracy}%</h3>
+
+            <button class="review-btn" onclick="reviewAnswers()">
+            Review Answers
+            </button>
+
+            <div id="reviewSection"></div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+// ===============================
+// REVIEW ANSWERS
+// ===============================
+
+function reviewAnswers(){
+
+    const reviewSection = document.getElementById("reviewSection");
+
+    let html = `<h1 style="margin-top:40px;">Review Section</h1>`;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        let status = "";
+        let marks = "";
+
+        if(userAns === null){
+
+            status = `<span class="unanswered">Unanswered</span>`;
+            marks = `0 Marks`;
+
+        }
+        else if(userAns === question.answer){
+
+            status = `<span class="correct">Correct ✅</span>`;
+            marks = `+1 Mark`;
+
+        }
+        else{
+
+            status = `<span class="wrong">Wrong ❌</span>`;
+            marks = `-0.25 Mark`;
+
+        }
+
+        html += `
+
+        <div class="review-question">
+
+            <h3>Q${index+1}. ${question.q}</h3>
+
+            <p>${status}</p>
+
+            <p><b>Marks:</b> ${marks}</p>
+
+            <p>
+            <b>Your Answer:</b>
+            ${
+                userAns === null
+                ? "Not Attempted"
+                : question.options[userAns]
+            }
+            </p>
+
+            <div class="correct-answer">
+            <b>Correct Answer:</b>
+            ${question.options[question.answer]}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    reviewSection.innerHTML = html;
+
+}
+
+// ===============================
+// TIMER
+// ===============================
+
+let time = 1200;
+
+let timer;
+
+let isPaused = false;
+
+function startTimer(){
+
+    timer = setInterval(()=>{
+
+        if(!isPaused){
+
+            let minutes = Math.floor(time/60);
+
+            let seconds = time%60;
+
+            document.getElementById("timer").innerText =
+            `Time Left: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+
+            time--;
+
+            if(time < 0){
+
+                clearInterval(timer);
+
+                alert("Time is up! Quiz auto-submitted.");
+
+                submitQuiz();
+
+            }
+
+        }
+
+    },1000);
+
+}
+
+// ===============================
+// PAUSE TIMER
+// ===============================
+
+function pauseTimer(){
+
+    if(submitted) return;
+
+    isPaused = true;
+
+    document.getElementById("pauseBtn").disabled = true;
+
+    document.getElementById("resumeBtn").disabled = false;
+
+    // Disable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.add("disabled-option");
+    });
+
+    // Disable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = true;
+        btn.classList.add("disabled-btn");
+    });
+
+}
+// ===============================
+// RESUME TIMER
+// ===============================
+
+function resumeTimer(){
+
+    if(submitted) return;
+
+    isPaused = false;
+
+    document.getElementById("pauseBtn").disabled = false;
+
+    document.getElementById("resumeBtn").disabled = true;
+
+    // Enable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.remove("disabled-option");
+    });
+
+    // Enable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = false;
+        btn.classList.remove("disabled-btn");
+    });
+
+}
+// ===============================
+
+loadQuiz();
+
+startTimer();
+
+</script>
+
+</body>
+</html>
